@@ -18,6 +18,7 @@ class Menu extends Component {
 
 
     render() {
+
         const renderMenuItem = ({ item, index }) => {
             return (
                 <ListItem
@@ -27,7 +28,6 @@ class Menu extends Component {
                     hideChevron={true}
                     onPress={() => navigate('Dishdetail', { dishId: item.id })}
                     leftAvatar={{ source: require('./images/uthappizza.png') }}
-                    data={this.state.dishes}
                 />
 
             );
@@ -35,7 +35,7 @@ class Menu extends Component {
 
         const { navigate } = this.props.navigation;
 
-        return(
+        return (
             <FlatList
                 data={this.state.dishes}
                 renderItem={renderMenuItem}
