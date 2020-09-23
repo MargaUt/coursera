@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
 import { Card } from 'react-native-elements';
 import { Text, ScrollView, StyleSheet } from 'react-native';
-import { LEADERS } from '../shared/leaders';
 import { FlatList, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
 
-
+const mapStateToProps = state => {
+    return {
+        leaders: state.leaders
+    }
+}
 
 function History(props) {
     return (
-        <View style={{fontWeight: 'bold'}}>
+        <View style={{ fontWeight: 'bold' }}>
             <Text style={styles.title} > Our History </Text>
             <Text style={styles.text}>
                 Started in 2010, Ristorante con Fusion quickly established itself as a culinary icon par excellence in Hong Kong.
@@ -29,13 +34,7 @@ function History(props) {
 }
 class AboutUs extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            leaders: LEADERS,
-            title: "Corporate Leadership"
-        };
-    }
+
     static navigationOptions = {
         title: 'About Us'
     };
@@ -47,8 +46,8 @@ class AboutUs extends Component {
                     title={item.name}
                     subtitle={item.description}
                     hideChevron={true}
-                    leftAvatar={{ source: require('./images/alberto.png') }}
-                    data={this.state.leaders}
+                    leftAvatar={{ source: { uri: baseUrl + item.image } }}
+                    data={this.props.leaders.leaders}
                 />
 
             );
@@ -59,9 +58,9 @@ class AboutUs extends Component {
                     <History />
                 </Card>
                 <Card>
-                    <Text style={styles.title} > {this.state.title}</Text>
+                    <Text style={styles.title} ></Text>
                     <FlatList
-                        data={this.state.leaders}
+                        data={this.props.leaders.leaders}
                         renderItem={renderAboutUs}
                         keyExtractor={item => item.id.toString()}
                     />
@@ -84,8 +83,8 @@ const styles = StyleSheet.create({
     text: {
         margin: 10,
         textAlign: 'left',
-        fontWeight: 'bold' 
+        fontWeight: 'bold'
     }
-  });
+});
 
-export default AboutUs;
+export default connect(mapStateToProps)(AboutUs);
