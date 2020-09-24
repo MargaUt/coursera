@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal } from 'react-native';
 import { Card } from 'react-native-elements';
-import DatePicker from 'react-native-datepicker'
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 class Reservation extends Component {
 
@@ -11,7 +11,10 @@ class Reservation extends Component {
         this.state = {
             guests: 1,
             smoking: false,
-            date: '',
+            date: new Date(),
+            time: new Date(),
+            show: false,
+            mode: "date",
             showModal: false
         }
     }
@@ -33,12 +36,19 @@ class Reservation extends Component {
         this.setState({
             guests: 1,
             smoking: false,
+            date: new Date(),
+            time: new Date(),
+            show: false,
+            mode: "date",
             date: '',
             showModal: false
         });
     }
 
     render() {
+        const showDatepicker = () => {
+            this.setState({ show: true });
+        };
         return (
             <ScrollView>
                 <View style={styles.formRow}>
@@ -46,7 +56,10 @@ class Reservation extends Component {
                     <Picker
                         style={styles.formItem}
                         selectedValue={this.state.guests}
-                        onValueChange={(itemValue, itemIndex) => this.setState({ guests: itemValue })}>
+                        onValueChange={(itemValue, itemIndex) =>
+                            this.setState({ guests: itemValue })
+                        }
+                    >
                         <Picker.Item label="1" value="1" />
                         <Picker.Item label="2" value="2" />
                         <Picker.Item label="3" value="3" />
@@ -60,35 +73,35 @@ class Reservation extends Component {
                     <Switch
                         style={styles.formItem}
                         value={this.state.smoking}
-                        onTintColor='#512DA8'
-                        onValueChange={(value) => this.setState({ smoking: value })}>
-                    </Switch>
+                        trackColor="#512DA8"
+                        onValueChange={(value) => this.setState({ smoking: value })}
+                    ></Switch>
                 </View>
                 <View style={styles.formRow}>
                     <Text style={styles.formLabel}>Date and Time</Text>
-                    <DatePicker
-                        style={{ flex: 2, marginRight: 20 }}
-                        date={this.state.date}
-                        format=''
-                        mode="datetime"
-                        placeholder="select date and Time"
-                        minDate="2017-01-01"
-                        confirmBtnText="Confirm"
-                        cancelBtnText="Cancel"
-                        customStyles={{
-                            dateIcon: {
-                                position: 'absolute',
-                                left: 0,
-                                top: 4,
-                                marginLeft: 0
-                            },
-                            dateInput: {
-                                marginLeft: 36
-                            }
-                            // ... You can check the source to find the other keys. 
-                        }}
-                        onDateChange={(date) => { this.setState({ date: date }) }}
-                    />
+                    <Text style={styles.formItem} onPress={showDatepicker}>
+                        {this.state.date.toDateString()} {this.state.time.toTimeString()}
+                    </Text>
+                    {this.state.show && (
+                        <DateTimePicker
+                            value={this.state.date}
+                            mode={this.state.mode}
+                            display="default"
+                            minimumDate={new Date()}
+                            onChange={(selected, value) => {
+                                if (value !== undefined) {
+                                    this.setState({
+                                        show: this.state.mode === "time" ? false : true,
+                                        mode: "time",
+                                        date: new Date(selected.nativeEvent.timestamp),
+                                        time: new Date(selected.nativeEvent.timestamp),
+                                    });
+                                } else {
+                                    this.setState({ show: false });
+                                }
+                            }}
+                        />
+                    )}
                 </View>
                 <View style={styles.formRow}>
                     <Button
@@ -99,17 +112,32 @@ class Reservation extends Component {
                     />
                 </View>
                 <Modal
-                    animationType={"slide"} transparent={false}
+                    animationType={"slide"}
+                    transparent={false}
                     visible={this.state.showModal}
                     onDismiss={() => this.toggleModal()}
-                    onRequestClose={() => this.toggleModal()}>
+                    onRequestClose={() => this.toggleModal()}
+                >
                     <View style={styles.modal}>
                         <Text style={styles.modalTitle}>Your Reservation</Text>
-                        <Text style={styles.modalText}>Number of Guests: {this.state.guests}</Text>
-                        <Text style={styles.modalText}>Smoking?: {this.state.smoking ? 'Yes' : 'No'}</Text>
-                        <Text style={styles.modalText}>Date and Time: {this.state.date}</Text>
+                        <Text style={styles.modalText}>
+                            Number of Guests: {this.state.guests}
+                        </Text>
+                        <Text style={styles.modalText}>
+                            Smoking?: {this.state.smoking ? "Yes" : "No"}
+                        </Text>
+                        <Text style={styles.modalText}>
+                            Date: {this.state.date.toDateString()}
+                        </Text>
+                        <Text style={styles.modalText}>
+                            Time: {this.state.time.toTimeString()}
+                        </Text>
+
                         <Button
-                            onPress={() => { this.toggleModal(); this.resetForm(); }}
+                            onPress={() => {
+                                this.toggleModal();
+                                this.resetForm();
+                            }}
                             color="#512DA8"
                             title="Close"
                         />
