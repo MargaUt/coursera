@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Menu from './MenuComponent';
 import Home from './HomeComponent';
-import { render } from 'react-dom';
 import Dishdetail from './DishdetailComponent';
 import ContactDetail from './ContactComponent';
 import AboutUs from './AboutComponent';
@@ -12,6 +11,7 @@ import Constants from 'expo-constants';
 import { connect } from 'react-redux';
 import { fetchDishes, fetchComments, fetchPromos, fetchLeaders } from '../redux/ActionCreators';
 import Reservation from './ReservationComponent';
+import Form from './Form';
 
 const mapStateToProps = state => {
     return {
@@ -40,7 +40,9 @@ const MenuNavigator = createStackNavigator({
     },
     Dishdetail: { screen: Dishdetail },
     ContactDetail: { screen: ContactDetail },
-    AboutUs: { screen: AboutUs }
+    AboutUs: { screen: AboutUs },
+    Form: { screen: Form }
+
 
 },
     {

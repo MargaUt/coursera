@@ -57,15 +57,7 @@ class Menu extends Component {
                     keyExtractor={item => item.id.toString()}
                 />
             );
-        }
-
-        return (
-            <FlatList
-                data={this.props.dishes.dishes}
-                renderItem={renderMenuItem}
-                keyExtractor={item => item.id.toString()}
-            />
-        );
+        };
     }
 
 
