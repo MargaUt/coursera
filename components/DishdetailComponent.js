@@ -18,17 +18,30 @@ const mapDispatchToProps = dispatch => ({
     postComment: (dishId, rating, author, comment) => dispatch(postComment(dishId, rating, author, comment)),
 })
 
-const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
-    if (dx < -200)
-        return "add";
-    else if (dx > 200) {
-        return "comment";
-    }
-    else
-        return false;
-}
+
 
 function RenderDish(props) {
+
+
+    const toggleFav = () => {
+        if (props.fav) {
+            // props.removeFav();
+        }
+        else {
+            this.markFavorite();
+        }
+    }
+
+    const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
+        if (dx < -200)
+            return "add";
+        else if (dx > 200) {
+            return "comment";
+        }
+        else
+            return false;
+    }
+
     const dish = props.dish;
 
     if (dish != null) {
@@ -53,7 +66,7 @@ function RenderDish(props) {
                             name={props.favorite ? 'heart' : 'heart-o'}
                             type='font-awesome'
                             color='#f50'
-                            onPress={() => toggleFav()}
+                            onPress={() => props.favorite ? console.log('Already favorite') : props.onPress()}
                         />
                         <Icon
                             reverse
@@ -108,7 +121,7 @@ class DishDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            favorite: false,
+            favorite: [],
             showModal: false,
             author: String,
             rating: 5,
@@ -127,9 +140,14 @@ class DishDetail extends Component {
         })
     }
 
-
+    toggleFav = () => {
+        this.setState({
+            favorite: !this.state.favorite
+        })
+    }
     markFavorite(dishId) {
         this.props.postFavorite(dishId);
+        this.toggleFav();
     }
 
     static navigationOptions = {
@@ -146,6 +164,7 @@ class DishDetail extends Component {
                     favorite={this.props.favorites.some(el => el === dishId)}
                     onPress={() => this.markFavorite(dishId)}
                     toggleModal={this.toggleModal}
+                    markFav={this.markFav}
                 />
                 <RenderComments comments={this.props.comments.comments.filter((comment) => comment.dishId === dishId)} />
                 <Modal
