@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useRef } from 'react';
 import {
     Text, View, ScrollView, FlatList, Modal, StyleSheet,
     Button, Alert, PanResponder
@@ -28,6 +28,8 @@ function RenderDish(props) {
 
     const dish = props.dish;
 
+    const viewRef = useRef(null); 
+
     const toggleFav = () => {
         if (props.fav) {
             // props.removeFav();
@@ -50,6 +52,13 @@ function RenderDish(props) {
         onStartShouldSetPanResponder: (e, gestureState) => {
             return true;
         },
+
+        onPanResponderGrant: () => {
+            viewRef.current.rubberBand(1000).then(endState =>
+                console.log(endState.finished ?
+                    'finished' : 'cancelled'));
+        },
+
         onPanResponderEnd: (e, gestureState) => {
             console.log("pan responder end", gestureState);
             if (recognizeDrag(gestureState))
@@ -71,8 +80,9 @@ function RenderDish(props) {
 
     if (dish != null) {
         return (
-            <Animatable.View 
-            animation="fadeInDown" duration={2000} delay={1000}
+            <Animatable.View
+                animation="fadeInDown" duration={2000} delay={1000}
+                ref={viewRef}
                 {...panResponder.panHandlers}>
                 <Card
                     featuredTitle={dish.name}
