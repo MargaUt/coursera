@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, StyleSheet, Picker,
-Switch, Button, Modal } from 'react-native';
-import { Card } from 'react-native-elements';
+import { Text, View, StyleSheet, Picker, Switch, Button, Alert, Modal } from 'react-native';
 import DateTimePicker from "@react-native-community/datetimepicker";
+import * as Animatable from 'react-native-animatable';
+
+
+
+
+
+
 
 class Reservation extends Component {
 
@@ -28,9 +33,72 @@ class Reservation extends Component {
         this.setState({ showModal: !this.state.showModal });
     }
 
+
+    okPress = () => {
+        this.addReservationToCalendar();
+        this.resetForm();
+    }
+
+    async addReservationToCalendar() {
+
+        const startDate = new Date(Date.parse(this.state.date))
+        const endDate = new Date(Date.parse(this.state.date) + 2 * 60 * 60 * 1000)
+
+        // console.log("State :", this.state.date);
+        // console.log("Start date : ",startDate);
+        // console.log("End Date", endDate)
+        // console.log(Localization.timezone);
+
+        if (Platform.OS === 'android') {
+            const defaultCalendar = await Calendar.getCalendarsAsync();
+            // console.log("Default : ",defaultCalendar);
+            Calendar.createEventAsync(defaultCalendar[0].id, {
+                title: 'Confusion Restaurant',
+                startDate: startDate,
+                endDate: endDate,
+                timeZone: Localization.timezone,
+                location: '121 Clear Water Bay Road'
+            })
+        }
+        else if (Platform.OS === 'ios') {
+            const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+            Calendar.createEventAsync(defaultCalendar.id, {
+                title: 'Confusion Restaurant',
+                startDate: startDate,
+                endDate: endDate,
+                timeZone: Localization.timezone,
+                location: '121 Clear Water Bay Road'
+            })
+                .catch(err => console.log(err))
+            Calendar.createReminderAsync(null, {
+                title: 'Confusion Restaurant',
+                startDate: startDate,
+                endDate: endDate,
+                timeZone: Localization.timezone,
+                location: '121 Clear Water Bay Road'
+            })
+                .catch(err => console.log(err))
+
+        }
+    }
+
     handleReservation() {
-        console.log(JSON.stringify(this.state));
-        this.toggleModal();
+        Alert.alert(
+            "Confirm Details",
+            `Number of Guests : ${this.state.guests}\n Somking : ${this.state.smoking ? "Yes" : "No"}\n Date and Time : ${this.state.date}\n`,
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => this.resetForm()
+                },
+                {
+                    text: 'Ok',
+                    onPress: () => this.okPress()
+                }
+            ],
+            { cancelable: false }
+        )
+
     }
 
     resetForm() {
@@ -51,7 +119,7 @@ class Reservation extends Component {
             this.setState({ show: true });
         };
         return (
-            <ScrollView>
+            <Animatable.View animation="zoomInUp" style={{ flex: 1, marginBottom: 300 }} >
                 <View style={styles.formRow}>
                     <Text style={styles.formLabel}>Number of Guests</Text>
                     <Picker
@@ -144,7 +212,8 @@ class Reservation extends Component {
                         />
                     </View>
                 </Modal>
-            </ScrollView>
+            </Animatable.View>
+
         );
     }
 

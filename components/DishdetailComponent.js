@@ -28,7 +28,7 @@ function RenderDish(props) {
 
     const dish = props.dish;
 
-    const viewRef = useRef(null); 
+    const viewRef = useRef(null);
 
     const toggleFav = () => {
         if (props.fav) {
@@ -39,15 +39,16 @@ function RenderDish(props) {
         }
     }
 
-    const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
-        if (dx < -200)
+    const recognizeComment = ({ moveX, moveY, dx, dy }) => {
+        if ( dx < -200 )
             return "add";
-        else if (dx > 200) {
+        else if(dx > 200){
             return "comment";
         }
         else
             return false;
     }
+
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: (e, gestureState) => {
             return true;
@@ -58,20 +59,21 @@ function RenderDish(props) {
                 console.log(endState.finished ?
                     'finished' : 'cancelled'));
         },
-
         onPanResponderEnd: (e, gestureState) => {
-            console.log("pan responder end", gestureState);
-            if (recognizeDrag(gestureState))
+            const dragType = recognizeComment(gestureState)
+            if (dragType === 'add')
                 Alert.alert(
-                    'Add Favorite',
-                    'Are you sure you wish to add ' + dish.name + ' to favorite?',
+                    `${props.fav ? "Remove Favourite" : 'Add Favourite'}`,
+                    `Are you sure you wish to ${props.fav ? 'Remove' : 'Add'} ${dish.name} ${props.fav ? 'from' : 'to'} favorite?`,
                     [
-                        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                        { text: 'OK', onPress: () => { props.favorite ? console.log('Already favorite') : props.onPress() } },
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                        {text: 'OK', onPress: () => toggleFav()},
                     ],
                     { cancelable: false }
                 );
-
+            else if(dragType === 'comment'){
+                props.toggleModal();
+            }
             return true;
         }
     })
