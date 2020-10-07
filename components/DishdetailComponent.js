@@ -1,7 +1,7 @@
 import React, { Component, useRef } from 'react';
 import {
     Text, View, ScrollView, FlatList, Modal, StyleSheet,
-    Button, Alert, PanResponder
+    Button, Alert, PanResponder, Share
 } from 'react-native';
 import { Card, Icon, AirbnbRating, Input } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -40,9 +40,9 @@ function RenderDish(props) {
     }
 
     const recognizeComment = ({ moveX, moveY, dx, dy }) => {
-        if ( dx < -200 )
+        if (dx < -200)
             return "add";
-        else if(dx > 200){
+        else if (dx > 200) {
             return "comment";
         }
         else
@@ -66,19 +66,27 @@ function RenderDish(props) {
                     `${props.fav ? "Remove Favourite" : 'Add Favourite'}`,
                     `Are you sure you wish to ${props.fav ? 'Remove' : 'Add'} ${dish.name} ${props.fav ? 'from' : 'to'} favorite?`,
                     [
-                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                        {text: 'OK', onPress: () => toggleFav()},
+                        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                        { text: 'OK', onPress: () => toggleFav() },
                     ],
                     { cancelable: false }
                 );
-            else if(dragType === 'comment'){
+            else if (dragType === 'comment') {
                 props.toggleModal();
             }
             return true;
         }
     })
 
-
+    const shareDish = (title, message, url) => {
+        Share.share({
+            title: title,
+            message: title + ': ' + message + ' ' + url,
+            url: url
+        }, {
+            dialogTitle: 'Share ' + title
+        })
+    }
 
     if (dish != null) {
         return (
@@ -107,6 +115,14 @@ function RenderDish(props) {
                             color='#f50'
                             onPress={() => props.favorite ? console.log('Already favorite') : props.onPress()}
                         />
+                        <Icon
+                            raised
+                            reverse
+                            name='share'
+                            type='font-awesome'
+                            color='#51D2A8'
+                            onPress={() => shareDish(dish.name, dish.description,
+                             baseUrl + dish.image)} />
                         <Icon
                             reverse
                             name='pencil'
