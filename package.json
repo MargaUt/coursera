@@ -6,6 +6,7 @@
     "expo-calendar": "~8.2.2",
     "expo-constants": "~9.1.1",
     "expo-localization": "~8.2.1",
+    "expo-mail-composer": "~8.2.1",
     "expo-permissions": "~9.0.1",
     "expo-secure-store": "~9.0.1",
     "react": "~16.11.0",
