@@ -4,7 +4,8 @@ import {
     StyleSheet,
     Text,
     View,
-} from 'react-native'
+} from 'react-native';
+
 
 const styles = StyleSheet.create({
     loadingView: {
